@@ -53,7 +53,7 @@ updateProyecto: async (req, res) => {
         idInstitucion } = req.body;
 
     try {
-        const result = await pool.query(`UPDATE proyecto SET`)
+        const result = await pool.query(`UPDATE proyecto SET parra gey`)
         
 
 
