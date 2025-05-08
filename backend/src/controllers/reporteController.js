@@ -40,22 +40,64 @@ const reporteController = {
         // crear el contenido del pdf
         const docDefinition = {
             content: [
-              { text: 'Reporte del Proyecto Escolar', style: 'header' },
-              { text: `Nombre: ${proyecto.nombre}`, margin: [0, 10, 0, 0] },
-              { text: `Descripción: ${proyecto.descripcion}` },
-              { text: `Objetivos: ${proyecto.objetivos}` },
-              { text: `Cronograma: ${proyecto.cronograma}` },
-              { text: `Institución: ${proyecto.institucion}` },
-              { text: `Fechas: ${proyecto.fechainicio} a ${proyecto.fechafin}` },
-              { text: 'Estudiantes vinculados:', style: 'subheader' },
+              { text: 'Reporte del Proyecto Escolar', style: 'title' },
+              { canvas: [ { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 } ] },
+              
+              { text: '\nInformación General', style: 'header' },
               {
-                ul: estudiantes.map(e => `${e.nombre} ${e.apellidos}`)
+                style: 'infoTable',
+                table: {
+                  widths: ['30%', '70%'],
+                  body: [
+                    ['Nombre del Proyecto:', proyecto.nombre],
+                    ['Descripción:', proyecto.descripcion],
+                    ['Objetivos:', proyecto.objetivos],
+                    ['Cronograma:', proyecto.cronograma],
+                    ['Observaciones:', proyecto.observaciones || 'N/A'],
+                    ['Institución:', proyecto.institucion]
+                  ]
+                },
+                layout: 'lightHorizontalLines'
               },
-              { text: `Generado el: ${new Date().toLocaleDateString()}`, margin: [0, 20, 0, 0] }
+          
+              { text: '\nFechas del Proyecto', style: 'header' },
+              {
+                columns: [
+                  { text: `Inicio: ${proyecto.fechainicio}`, width: '50%' },
+                  { text: `Fin: ${proyecto.fechafin}`, width: '50%' }
+                ]
+              },
+          
+              { text: '\nEstudiantes Vinculados', style: 'header' },
+              {
+                ul: estudiantes.length > 0
+                  ? estudiantes.map(e => `${e.nombre} ${e.apellidos}`)
+                  : ['Sin estudiantes asignados.']
+              },
+          
+              { text: `\n\nGenerado el: ${new Date().toLocaleDateString()}`, style: 'footer' }
             ],
             styles: {
-              header: { fontSize: 18, bold: true },
-              subheader: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] }
+              title: {
+                fontSize: 18,
+                bold: true,
+                alignment: 'center',
+                margin: [0, 0, 0, 10]
+              },
+              header: {
+                fontSize: 14,
+                bold: true,
+                color: '#336699',
+                margin: [0, 15, 0, 5]
+              },
+              infoTable: {
+                margin: [0, 5, 0, 15]
+              },
+              footer: {
+                fontSize: 10,
+                alignment: 'right',
+                color: 'gray'
+              }
             }
           };
 
