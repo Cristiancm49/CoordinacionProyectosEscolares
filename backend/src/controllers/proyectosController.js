@@ -65,7 +65,10 @@ const proyectoController = {
                     fechaFin,
                     idInstitucion]
             );
-            res.status(201).json(result.rows[0]);
+            res.status(201).json({
+                mensaje: 'Proyecto creado exitosamente.',
+                proyecto: result.rows[0]
+            });
         } catch (error) {
             console.error('Error al crear proyecto:', error);
             res.status(500).json({ message: 'Error al crear proyecto.' });
@@ -114,7 +117,10 @@ const proyectoController = {
                     message: 'Proyecto no encontrado para actualizar.'
                 });
             }
-            res.json(result.rows[0]);
+            res.json({
+                mensaje: 'Proyecto actualizado exitosamente.',
+                proyecto: result.rows[0]
+            });
         } catch (error) {
             console.error('Error al actualizar proyecto:', error);
             res.status(500).json({
