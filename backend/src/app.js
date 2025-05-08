@@ -8,8 +8,14 @@ app.use(cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/authRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const institucionesRoutes = require('./routes/institucionesRoutes');
+const estadoProyRoutes = require('./routes/estadoProyRoutes');
 
 app.use('/api/auth', authRoutes);
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/instituciones', institucionesRoutes);
+app.use('/api/estadoProy', estadoProyRoutes);
 
 app.get('/', (req, res) => {
     res.send('Gestión de Proyectos Escolares - Backend Activo');

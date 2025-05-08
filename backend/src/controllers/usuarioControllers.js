@@ -1,8 +1,8 @@
 const pool = require('../config/db');
 const bcrypt = require('bcrypt');
-const { get, param } = require('../routes/authRoutes');
 
-const usuarioController = {
+
+const usuarioControllers = {
     getUsuarios: async (req, res) => {
         try {
             const result = await pool.query(`SELECT * FROM usuario`);
@@ -13,7 +13,7 @@ const usuarioController = {
         }
     },
 
-    getUsuariosById: async (req, res) => {
+    getUsuarioById: async (req, res) => {
         const { id } =  req.params;
         try {
             const result = await pool.query(`SELECT * FROM usuario WHERE idusuario = $1`, [id]);
@@ -27,7 +27,7 @@ const usuarioController = {
         }
     },
 
-    createUsuarios: async (req, res) => {
+    createUsuario: async (req, res) => {
         const { nombre, apellidos, contrasena, email, idRol } = req.body;
         try {
             const hashedPassword = await bcrypt.hash(contrasena, 10);
@@ -50,13 +50,13 @@ const usuarioController = {
         }
     },
 
-    updateUusario: async (req, res) => {
+    updateUsuario: async (req, res) => {
         const { id } = req.params;
         const { nombre, apellidos, contrasena, email, idRol } = req.body;
 
         try{
-            const hashedpassword = await bcrypt.hash(contrasena, 10);
-            constresult = await pool.query(`
+            const hashedPassword = await bcrypt.hash(contrasena, 10);
+            const result = await pool.query(`
                 UPDATE usuario
                 SET nombre = $1,
                     apellidos = $2,
@@ -77,4 +77,4 @@ const usuarioController = {
     }
 };
 
-module.exports = usuarioController;
+module.exports = usuarioControllers;
