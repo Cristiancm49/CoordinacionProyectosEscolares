@@ -67,6 +67,7 @@ getProyectoById: async (req, res) => {
             idInstitucion,
         } = req.body;
 
+
         try {
             const result = await pool.query(
                 'UPDATE proyecto SET nombre = $1, descripcion = $2, objetivos = $3, cronograma = $4, observaciones = $5, fechaInicio = $6, fechaFin = $7, idInstitucion = $8 WHERE idproyecto = $9 RETURNING *',
@@ -104,6 +105,7 @@ getProyectoById: async (req, res) => {
             res.status(500).json({ message: 'Error al obtener proyectos por institución.' });
         }
     },
+
 
     getProyectosByUsuario: async (req, res) => {
         const { idUsuario } = req.params;
