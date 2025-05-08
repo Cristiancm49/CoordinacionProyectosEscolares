@@ -12,24 +12,24 @@ const proyectoController = {
             res.status(500).json({ message: 'Error al obtener proyectos.' });
         }
     },
-getProyectoById: async (req, res) => {
-    
-    const { id } = req.params;
+    getProyectoById: async (req, res) => {
 
-    try {
+        const { id } = req.params;
 
-        const result = await pool.query(`SELECT * FROM proyecto WHERE idproyecto = $1`, [id]);
-        if(result.rows.length === 0) {
-            return res.status(404).json({ message: 'Proyecto no encontrado.' });
+        try {
+
+            const result = await pool.query(`SELECT * FROM proyecto WHERE idproyecto = $1`, [id]);
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: 'Proyecto no encontrado.' });
+            }
+            res.json(result.rows[0]);
+
+        } catch (error) {
+            console.error('Error al obtener proyecto por ID:', error);
+            res.status(500).json({ message: 'Error al obtener proyecto por ID.' });
+
         }
-        res.json(result.rows[0]);
-        
-    } catch (error) {
-        console.error('Error al obtener proyecto por ID:', error);
-        res.status(500).json({ message: 'Error al obtener proyecto por ID.' });
-        
-    }
-},
+    },
 
     createProyecto: async (req, res) => {
         const {
@@ -45,8 +45,25 @@ getProyectoById: async (req, res) => {
 
         try {
             const result = await pool.query(
-                'INSERT INTO proyecto (nombre, descripcion, objetivos, cronograma, observaciones, fechaInicio, fechaFin, idInstitucion) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-                [nombre, descripcion, objetivos, cronograma, observaciones, fechaInicio, fechaFin, idInstitucion]
+                `INSERT INTO proyecto (
+                nombre, 
+                descripcion, 
+                objetivos, 
+                cronograma, 
+                observaciones, 
+                fechaInicio, 
+                fechaFin, 
+                idInstitucion) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+                [
+                    nombre,
+                    descripcion,
+                    objetivos,
+                    cronograma,
+                    observaciones,
+                    fechaInicio,
+                    fechaFin,
+                    idInstitucion]
             );
             res.status(201).json(result.rows[0]);
         } catch (error) {
@@ -70,7 +87,16 @@ getProyectoById: async (req, res) => {
 
         try {
             const result = await pool.query(
-                'UPDATE proyecto SET nombre = $1, descripcion = $2, objetivos = $3, cronograma = $4, observaciones = $5, fechaInicio = $6, fechaFin = $7, idInstitucion = $8 WHERE idproyecto = $9 RETURNING *',
+                `UPDATE proyecto SET 
+                nombre = $1, 
+                descripcion = $2, 
+                objetivos = $3, 
+                cronograma = $4, 
+                observaciones = $5, 
+                fechaInicio = $6, 
+                fechaFin = $7, 
+                idInstitucion = $8 
+                WHERE idproyecto = $9 RETURNING *`,
                 [
                     nombre,
                     descripcion,
@@ -84,25 +110,35 @@ getProyectoById: async (req, res) => {
                 ]
             );
             if (result.rows.length === 0) {
-                return res.status(404).json({ message: 'Proyecto no encontrado para actualizar.' });
+                return res.status(404).json({
+                    message: 'Proyecto no encontrado para actualizar.'
+                });
             }
             res.json(result.rows[0]);
         } catch (error) {
             console.error('Error al actualizar proyecto:', error);
-            res.status(500).json({ message: 'Error al actualizar proyecto.' });
+            res.status(500).json({
+                message: 'Error al actualizar proyecto.'
+            });
         }
     },
     getProyectosByInstitucion: async (req, res) => {
         const { idInstitucion } = req.params;
         try {
-            const result = await pool.query('SELECT * FROM proyecto WHERE idInstitucion = $1', [idInstitucion]);
+            const result = await pool.query(`SELECT * FROM 
+                proyecto WHERE idInstitucion = $1`,
+                [idInstitucion]);
             if (result.rows.length === 0) {
-                return res.status(404).json({ message: 'No se encontraron proyectos para esta institución.' });
+                return res.status(404).json({
+                    message: 'No se encontraron proyectos para esta institución.'
+                });
             }
             res.json(result.rows);
         } catch (error) {
             console.error('Error al obtener proyectos por institución:', error);
-            res.status(500).json({ message: 'Error al obtener proyectos por institución.' });
+            res.status(500).json({
+                message: 'Error al obtener proyectos por institución.'
+            });
         }
     },
 
@@ -117,12 +153,16 @@ getProyectoById: async (req, res) => {
                 [idUsuario]
             );
             if (result.rows.length === 0) {
-                return res.status(404).json({ message: 'No se encontraron proyectos para este usuario.' });
+                return res.status(404).json({
+                    message: 'No se encontraron proyectos para este usuario.'
+                });
             }
             res.json(result.rows);
         } catch (error) {
             console.error('Error al obtener proyectos por usuario:', error);
-            res.status(500).json({ message: 'Error al obtener proyectos por usuario.' });
+            res.status(500).json({
+                message: 'Error al obtener proyectos por usuario.'
+            });
         }
     },
 };

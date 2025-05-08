@@ -1,7 +1,7 @@
 const express = require('express');
 const routes = express.Router();
 
-const proyectosController = require('../controllers/proyectoController');
+const proyectosController = require('../controllers/proyectosController');
 
 routes.get('/getProyectos', proyectosController.getProyectos);
 routes.get('/getProyecto/:id', proyectosController.getProyectoById);
