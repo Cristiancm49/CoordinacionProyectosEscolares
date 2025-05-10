@@ -14,6 +14,7 @@ const estadoProyRoutes = require('./routes/estadoProyRoutes');
 const proyectoRoutes = require('./routes/proyectosRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 const listEstudiantesProyRoutes = require('./routes/listEstudiantesProyRoutes');
+const estudiantesRoutes = require('./routes/estudiantesRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuarioRoutes);
@@ -21,7 +22,8 @@ app.use('/api/instituciones', institucionesRoutes);
 app.use('/api/estadoProy', estadoProyRoutes);
 app.use('/api/proyectos', proyectoRoutes);
 app.use('/api/reportes', reporteRoutes);
-app.use('/api/listEstudiantesProy', listEstudiantesProyRoutes);
+app.use('/api/proyectos', listEstudiantesProyRoutes);
+app.use('/api/estudiantes', estudiantesRoutes);
 
 app.get('/', (req, res) => {
     res.send('Gestión de Proyectos Escolares - Backend Activo');
