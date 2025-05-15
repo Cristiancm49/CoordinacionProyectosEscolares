@@ -1,0 +1,88 @@
+import React from 'react';
+
+const features = [
+  {
+    title: 'Gestión de Usuarios',
+    description: 'Crear, editar y administrar cuentas para estudiantes, docentes y coordinadores.',
+    icon: (
+      <svg
+        className="w-12 h-12 mx-auto text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16 14a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14v7" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 21h12" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Registro de Proyectos',
+    description: 'Agregar proyectos con título, objetivos, cronograma, presupuesto, equipo e institución.',
+    icon: (
+      <svg
+        className="w-12 h-12 mx-auto text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 0 0 2-2v-5H3v5a2 2 0 0 0 2 2z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Seguimiento de Avances',
+    description: 'Registrar hitos con fechas, documentos y fotos para seguimiento detallado.',
+    icon: (
+      <svg
+        className="w-12 h-12 mx-auto text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-4H5l7-7 7 7h-4v4z" />
+      </svg>
+    ),
+  },
+  {
+    title: 'Reportes PDF',
+    description: 'Generar reportes completos y exportables para evaluación y seguimiento.',
+    icon: (
+      <svg
+        className="w-12 h-12 mx-auto text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 17h10M7 7h6M7 12h10m-7-5v10" />
+      </svg>
+    ),
+  },
+];
+
+export default function Features() {
+  return (
+    <section className="py-16 px-6 md:px-20 bg-gray-50">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {features.map(({ title, description, icon }, idx) => (
+          <div
+            key={idx}
+            className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition cursor-default text-center"
+          >
+            <div className="mb-4">{icon}</div>
+            <h3 className="text-xl font-semibold mb-2">{title}</h3>
+            <p className="text-gray-600">{description}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
