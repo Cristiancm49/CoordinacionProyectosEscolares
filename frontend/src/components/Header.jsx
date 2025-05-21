@@ -5,21 +5,19 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-2xl font-bold text-indigo-700">
+    <header className="bg-primary text-white sticky top-0 z-50 shadow-lg">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
+        <Link to="/" className="text-2xl font-bold tracking-wide">
           ProyectoEscolar
         </Link>
 
-        {/* Menú escritorio */}
-        <nav className="hidden md:flex space-x-6 text-gray-700 font-medium">
-          <Link to="/" className="hover:text-indigo-600">Inicio</Link>
-          <Link to="/proyectos" className="hover:text-indigo-600">Proyectos</Link>
-          <Link to="/usuarios" className="hover:text-indigo-600">Usuarios</Link>
-          <Link to="/contacto" className="hover:text-indigo-600">Contacto</Link>
+        <nav className="hidden md:flex space-x-8 font-semibold">
+          <Link to="/" className="hover:text-accent transition">Inicio</Link>
+          <Link to="/proyectos" className="hover:text-accent transition">Proyectos</Link>
+          <Link to="/usuarios" className="hover:text-accent transition">Usuarios</Link>
+          <Link to="/contacto" className="hover:text-accent transition">Contacto</Link>
         </nav>
 
-        {/* Botón hamburguesa móvil */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden focus:outline-none"
@@ -37,13 +35,12 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Menú móvil */}
       {menuOpen && (
-        <nav className="md:hidden bg-white shadow-md">
-          <Link to="/" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Inicio</Link>
-          <Link to="/proyectos" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Proyectos</Link>
-          <Link to="/usuarios" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Usuarios</Link>
-          <Link to="/contacto" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Contacto</Link>
+        <nav className="md:hidden bg-primary text-white px-6 py-4 space-y-3 font-semibold">
+          <Link to="/" className="block hover:text-accent" onClick={() => setMenuOpen(false)}>Inicio</Link>
+          <Link to="/proyectos" className="block hover:text-accent" onClick={() => setMenuOpen(false)}>Proyectos</Link>
+          <Link to="/usuarios" className="block hover:text-accent" onClick={() => setMenuOpen(false)}>Usuarios</Link>
+          <Link to="/contacto" className="block hover:text-accent" onClick={() => setMenuOpen(false)}>Contacto</Link>
         </nav>
       )}
     </header>

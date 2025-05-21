@@ -2,16 +2,24 @@ import React from 'react';
 
 export default function Hero() {
   return (
-    <section className="bg-indigo-700 text-white py-20 px-6 md:px-32 flex flex-col items-center text-center">
-      <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
-        Plataforma de Gestión de Proyectos Escolares
-      </h1>
-      <p className="mb-8 text-lg md:text-xl max-w-3xl">
-        Registra, controla y visualiza los avances de tus proyectos en una plataforma fácil y segura.
-      </p>
-      <button className="bg-white text-indigo-700 font-bold px-8 py-3 rounded hover:bg-gray-100 transition">
-        Comenzar Ahora
-      </button>
+    <section
+      className="bg-secondary text-white py-32 px-6 md:px-20 text-center"
+      aria-label="Hero section"
+      data-aos="fade-up"
+    >
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-5xl md:text-7xl font-extrabold mb-6 drop-shadow-lg leading-tight">
+          Plataforma de Gestión de <br className="hidden md:block" /> Proyectos Escolares
+        </h1>
+
+        <p className="text-xl md:text-2xl max-w-3xl mx-auto font-light mb-8 drop-shadow-md">
+          Registra, controla y visualiza los avances de tus proyectos de investigación escolar de manera simple y segura.
+        </p>
+
+        <p className="max-w-xl mx-auto text-accent italic text-lg md:text-xl tracking-wide">
+          ¡Empieza hoy y potencia la investigación en tu institución!
+        </p>
+      </div>
     </section>
   );
 }
