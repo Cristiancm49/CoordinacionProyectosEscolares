@@ -694,3 +694,313 @@ FOR EACH ROW EXECUTE FUNCTION auditoria.log_auditoria_json();
 CREATE TRIGGER tr_audit_factura
 AFTER INSERT OR UPDATE OR DELETE ON comercial.factura
 FOR EACH ROW EXECUTE FUNCTION auditoria.log_auditoria_json();
+
+
+
+INSERT INTO seguridad.rol (nombrerol)
+VALUES ('Veterinario');
+
+SELECT * FROM auditoria.rol
+ORDER BY fecha DESC
+LIMIT 1;
+INSERT INTO seguridad.tipo_documento (nombretipodocumento, estado)
+VALUES ('Cédula de Ciudadanía', true)
+ON CONFLICT (nombretipodocumento) DO NOTHING;
+
+INSERT INTO seguridad.persona (
+  documento, nombreuno, nombredos, apellidouno, apellidodos, telefono, tipodocumento
+)
+VALUES (
+  '1111111111', 'Juan', 'Carlos', 'Pérez', 'López', '3115554444',
+  (SELECT idtipodocumento FROM seguridad.tipo_documento WHERE nombretipodocumento = 'Cédula de Ciudadanía')
+)
+RETURNING idpersona;
+
+INSERT INTO seguridad.usuario (
+  correo, contrasenausuario, idpersona
+)
+VALUES (
+  'juan.perez@correo.com', '123456',  -- Usa una contraseña encriptada en producción
+  (SELECT idpersona FROM seguridad.persona WHERE documento = '1111111111')
+)
+RETURNING idusuario;
+
+
+-- Insertar una sesión de ordeño
+INSERT INTO produccion.sesion_ordeno (idusuario, horainicio, horafin, observaciones)
+VALUES (1, '06:00', '07:00', 'Ordeño de prueba') RETURNING idsesionordeno;
+
+select * from produccion.sesion_ordeno;
+
+-- Suponiendo que retornó el id 1
+-- Insertar en inventario vinculado a esa sesión
+INSERT INTO inventario.inventario_leche (fechainicio, cantidaddisponible, estado, ultimaactualizacion, idsesionordeno)
+VALUES (CURRENT_DATE, 0, true, CURRENT_TIMESTAMP, 4);
+
+-- Insertar vacas ordeñadas
+INSERT INTO produccion.vaca_ordeno (idvaca, idsesionordeno, cantidadleche, hora, observaciones)
+VALUES (1, 4, 5.2, '06:15', 'sin novedad'),
+       (2, 4, 4.8, '06:30', 'sin novedad');
+
+INSERT INTO produccion.raza (nombreraza)
+VALUES ('Holstein')
+ON CONFLICT (nombreraza) DO NOTHING;
+
+INSERT INTO produccion.vaca (
+  nombrevaca, descripcion, fechanacimiento, idraza
+)
+VALUES (
+  'Lunaaa',
+  'Vaca joven en buen estado de salud',
+  '2021-08-15',
+  (SELECT idraza FROM produccion.raza WHERE nombreraza = 'Holstein')
+)
+RETURNING idvaca;
+
+
+
+--- PROCEDIMIENTO DE ORDEÑO
+
+CREATE OR REPLACE PROCEDURE produccion.procesar_sesion_ordeno(
+    p_idsesionordeno INT,
+    p_idinventario   INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_leche DECIMAL(10,2);
+BEGIN
+    -- Validar que la sesión exista
+    IF NOT EXISTS (
+        SELECT 1
+        FROM produccion.sesion_ordeno
+        WHERE idsesionordeno = p_idsesionordeno
+    ) THEN
+        RAISE EXCEPTION 'La sesión de ordeño % no existe', p_idsesionordeno;
+    END IF;
+
+    -- Validar que el inventario exista
+    IF NOT EXISTS (
+        SELECT 1
+        FROM inventario.inventario_leche
+        WHERE idinventario = p_idinventario
+    ) THEN
+        RAISE EXCEPTION 'El inventario % no existe', p_idinventario;
+    END IF;
+
+    -- Calcular la leche ordeñada en la sesión
+    SELECT COALESCE(SUM(cantidadleche), 0)
+    INTO v_total_leche
+    FROM produccion.vaca_ordeno
+    WHERE idsesionordeno = p_idsesionordeno;
+
+    -- Actualizar el inventario sumando la leche de esta sesión
+    UPDATE inventario.inventario_leche
+    SET cantidaddisponible = cantidaddisponible + v_total_leche,
+        ultimaactualizacion = NOW()
+    WHERE idinventario = p_idinventario;
+
+    RAISE NOTICE 'Procesada sesión %: %.2f litros agregados al inventario %',
+        p_idsesionordeno, v_total_leche, p_idinventario;
+END;
+$$;
+
+CALL produccion.procesar_sesion_ordeno(4, 2);
+
+select * from inventario.inventario_leche
+select * from produccion.vaca_ordeno where idsesionordeno = 4
+
+---- funcion para el login 
+CREATE OR REPLACE FUNCTION seguridad.autenticar_usuario(
+    p_correo TEXT,
+    p_contrasenausuario TEXT
+)
+RETURNS TABLE (
+    idusuario INT,
+    correo TEXT,
+    idpersona INT,
+    documento TEXT,
+    nombreuno TEXT,
+    nombredos TEXT,
+    apellidouno TEXT,
+    apellidodos TEXT,
+    telefono TEXT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        u.idusuario,
+        u.correo::TEXT,
+        p.idpersona,
+        p.documento::TEXT,
+        p.nombreuno::TEXT,
+        p.nombredos::TEXT,
+        p.apellidouno::TEXT,
+        p.apellidodos::TEXT,
+        p.telefono::TEXT
+    FROM seguridad.usuario u
+    JOIN seguridad.persona p ON u.idpersona = p.idpersona
+    WHERE u.correo = p_correo
+      AND u.contrasenausuario = p_contrasenausuario;
+END;
+$$;
+
+
+
+SELECT * 
+FROM seguridad.autenticar_usuario('juan.perez@correo.com', '123456');
+
+
+
+-- proceso de venta de leche -- 1. Tipo de documento
+INSERT INTO seguridad.tipo_documento (nombretipodocumento, estado)
+VALUES ('Cédula de Ciudadanía', true)
+ON CONFLICT (nombretipodocumento) DO NOTHING;
+
+-- 2. Persona
+INSERT INTO seguridad.persona (
+  documento, nombreuno, nombredos, apellidouno, apellidodos, telefono, tipodocumento
+)
+VALUES (
+  '1234567890', 'Carlos', 'Andrés', 'Gómez', 'López', '3104567890',
+  (SELECT idtipodocumento FROM seguridad.tipo_documento WHERE nombretipodocumento = 'Cédula de Ciudadanía')
+)
+RETURNING idpersona;
+
+-- 3. Cliente
+INSERT INTO comercial.cliente (razonsocial, ubicacion, idpersona)
+VALUES (
+  'Lácteos El Paraíso',
+  'Vereda El Silencio, km 4',
+  (SELECT idpersona FROM seguridad.persona WHERE documento = '1234567890')
+)
+RETURNING idcliente;
+
+-- 4. Usuario (quien realiza la venta)
+INSERT INTO seguridad.usuario (
+  correo, contrasenausuario, idpersona
+)
+VALUES (
+  'vendedor@agrofarm.com', '123456',
+  (SELECT idpersona FROM seguridad.persona WHERE documento = '1234567890')
+)
+RETURNING idusuario;
+
+-- 5. Precio por litro
+INSERT INTO comercial.precio_litro (fecha, preciolitro)
+VALUES (CURRENT_DATE, 2000)
+RETURNING idpreciolitro;
+
+-- 6. Tipo de entrega
+INSERT INTO comercial.tipo_entrega (nombretipoentrega)
+VALUES ('A domicilio')
+RETURNING idtipoentrega;
+
+-- 7. Método de pago
+INSERT INTO comercial.metodo_pago (nombremetodopago)
+VALUES ('Efectivo')
+RETURNING idmetodopago;
+
+
+
+
+CREATE OR REPLACE PROCEDURE comercial.registrar_venta_leche(
+    p_idcliente INT,
+    p_cantidadlitros DECIMAL(10,2),
+    p_idusuario INT,
+    p_idinventario INT,
+    p_idpreciolitro INT,
+    p_idtipoentrega INT,
+    p_idmetodopago INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_disponible DECIMAL(10,2);
+    v_preciolitro DECIMAL(10,2);
+    v_total DECIMAL(10,2);
+    v_idventa INT;
+BEGIN
+    -- 1. Validar inventario
+    SELECT cantidaddisponible
+    INTO v_disponible
+    FROM inventario.inventario_leche
+    WHERE idinventario = p_idinventario;
+
+    IF v_disponible < p_cantidadlitros THEN
+        RAISE EXCEPTION 'Inventario insuficiente: %.2f disponibles, %.2f requeridos',
+            v_disponible, p_cantidadlitros;
+    END IF;
+
+    -- 2. Obtener precio por litro
+    SELECT preciolitro
+    INTO v_preciolitro
+    FROM comercial.precio_litro
+    WHERE idpreciolitro = p_idpreciolitro;
+
+    -- 3. Calcular total
+    v_total := v_preciolitro * p_cantidadlitros;
+
+    -- 4. Insertar venta
+    INSERT INTO comercial.venta_leche (
+        idcliente,
+        fechaventa,
+        cantidadlitros,
+        idusuario,
+        idinventario,
+        idpreciolitro,
+        idtipoentrega
+    )
+    VALUES (
+        p_idcliente,
+        CURRENT_DATE,
+        p_cantidadlitros,
+        p_idusuario,
+        p_idinventario,
+        p_idpreciolitro,
+        p_idtipoentrega
+    )
+    RETURNING idventa INTO v_idventa;
+
+    -- 5. Insertar factura
+    INSERT INTO comercial.factura (
+        idventa,
+        fechafactura,
+        estadopago,
+        total,
+        idmetodopago
+    )
+    VALUES (
+        v_idventa,
+        CURRENT_DATE,
+        'Pagado',
+        v_total,
+        p_idmetodopago
+    );
+
+    -- 6. Actualizar inventario
+    UPDATE inventario.inventario_leche
+    SET cantidaddisponible = cantidaddisponible - p_cantidadlitros,
+        ultimaactualizacion = NOW()
+    WHERE idinventario = p_idinventario;
+
+    RAISE NOTICE 'Venta % registrada con total %.2f. Inventario actualizado.', v_idventa, v_total;
+END;
+$$;
+
+
+CALL comercial.registrar_venta_leche(
+    1,      -- p_idcliente
+    9.5,   -- p_cantidadlitros
+    1,      -- p_idusuario
+    2,      -- p_idinventario
+    1,      -- p_idpreciolitro
+    1,      -- p_idtipoentrega
+    1       -- p_idmetodopago
+);
+
+select * from inventario.inventario_leche where idinventario = 2;
+
+select * from comercial.factura;
