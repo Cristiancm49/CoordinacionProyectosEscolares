@@ -4,6 +4,7 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
+import Register from '../pages/Register';
 
 export default function AppRoutes() {
     const { usuario } = useAuth();
@@ -11,6 +12,7 @@ export default function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
+            <Route path='/register' element={<Register />} />
             <Route 
             path="/login" 
             element={
