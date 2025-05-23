@@ -70,7 +70,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-20 px-6 md:px-20 bg-gradient-to-b from-white to-indigo-50">
+    <section className="py-20 px-6 md:px-20 bg-gray-100">
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">¿Qué puedes hacer en la plataforma?</h2>
         <p className="text-gray-600 mt-3 text-lg">Explora las funcionalidades clave diseñadas para apoyar tus proyectos escolares.</p>
@@ -80,7 +80,7 @@ export default function Features() {
         {features.map(({ title, description, icon }, idx) => (
           <div
             key={idx}
-            className="group bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-2xl bounce-hover transition-all duration-300 text-center"
+            className="group bg-white p-6 rounded-2xl border border-gray-200 shadow-md hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300 text-center"
             data-aos="fade-up"
             data-aos-delay={idx * 100}
           >
