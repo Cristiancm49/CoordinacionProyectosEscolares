@@ -1,25 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { LogIn, UserPlus } from 'lucide-react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    AOS.init({ duration: 700, easing: 'ease-in-out', once: true });
+  }, []);
+
   return (
-    <header className="bg-white shadow">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-2xl font-bold text-indigo-700">
-          ProyectoEscolar
+    <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto flex justify-between items-center px-6 py-5">
+        <Link
+          to="/"
+          className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide transition-transform duration-300 hover:scale-105 drop-shadow-sm"
+          data-aos="fade-down"
+        >
+          PGPE
         </Link>
 
-        {/* Menú escritorio */}
-        <nav className="hidden md:flex space-x-6 text-gray-700 font-medium">
-          <Link to="/" className="hover:text-indigo-600">Inicio</Link>
-          <Link to="/proyectos" className="hover:text-indigo-600">Proyectos</Link>
-          <Link to="/usuarios" className="hover:text-indigo-600">Usuarios</Link>
-          <Link to="/contacto" className="hover:text-indigo-600">Contacto</Link>
-        </nav>
+        <div className="hidden md:flex items-center space-x-4">
+          <Link
+            to="/login"
+            className="inline-flex items-center bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition transform hover:scale-[1.05] shadow-sm"
+          >
+            <LogIn className="w-4 h-4 mr-2" />
+            Iniciar Sesión
+          </Link>
+          <Link
+            to="/register"
+            className="inline-flex items-center bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition transform hover:scale-[1.05] shadow-sm"
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            Registrarse
+          </Link>
+        </div>
 
-        {/* Botón hamburguesa móvil */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden focus:outline-none"
@@ -37,13 +56,22 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Menú móvil */}
       {menuOpen && (
-        <nav className="md:hidden bg-white shadow-md">
-          <Link to="/" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Inicio</Link>
-          <Link to="/proyectos" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Proyectos</Link>
-          <Link to="/usuarios" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Usuarios</Link>
-          <Link to="/contacto" className="block px-4 py-2 hover:bg-indigo-50" onClick={() => setMenuOpen(false)}>Contacto</Link>
+        <nav className="md:hidden bg-blue-900 text-white px-6 py-4 space-y-3 font-semibold">
+          <Link
+            to="/login"
+            className="block hover:text-yellow-300 transition transform hover:scale-[1.05]"
+            onClick={() => setMenuOpen(false)}
+          >
+            Iniciar Sesión
+          </Link>
+          <Link
+            to="/register"
+            className="block hover:text-yellow-300 transition transform hover:scale-[1.05]"
+            onClick={() => setMenuOpen(false)}
+          >
+            Registrarse
+          </Link>
         </nav>
       )}
     </header>
