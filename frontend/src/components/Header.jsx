@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus } from 'lucide-react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     AOS.init({ duration: 700, easing: 'ease-in-out', once: true });
   }, []);
+
+  const irAlPanel = () => {
+    switch (usuario?.idRol) {
+      case 1:
+        navigate('/estudiante');
+        break;
+      case 2:
+        navigate('/docente');
+        break;
+      case 3:
+        navigate('/coordinador');
+        break;
+      default:
+        navigate('/');
+    }
+  };
 
   return (
     <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md">
@@ -23,20 +42,43 @@ export default function Header() {
         </Link>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Link
-            to="/login"
-            className="inline-flex items-center bg-white text-blue-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-100 transition transform hover:scale-[1.05] shadow-sm"
-          >
-            <LogIn className="w-4 h-4 mr-2" />
-            Iniciar Sesión
-          </Link>
-          <Link
-            to="/register"
-            className="inline-flex items-center bg-yellow-400 text-blue-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-300 transition transform hover:scale-[1.05] shadow-sm"
-          >
-            <UserPlus className="w-4 h-4 mr-2" />
-            Registrarse
-          </Link>
+        {usuario ? (
+  <div className="flex items-center space-x-4">
+    <button
+      onClick={irAlPanel}
+      className="bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl font-semibold text-sm hover:bg-yellow-300 transition"
+    >
+      Ir al panel
+    </button>
+
+    <span className="text-white font-medium text-base">
+      {usuario.nombre}
+    </span>
+
+    <img
+      src="https://i.pravatar.cc/150"
+      alt="Perfil"
+      className="w-12 h-12 rounded-full border-2 border-white shadow"
+    />
+  </div>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="inline-flex items-center bg-white text-blue-800 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-blue-100 transition transform hover:scale-[1.05] shadow-sm"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Iniciar Sesión
+              </Link>
+              <Link
+                to="/register"
+                className="inline-flex items-center bg-yellow-400 text-blue-900 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-yellow-300 transition transform hover:scale-[1.05] shadow-sm"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Registrarse
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -56,7 +98,8 @@ export default function Header() {
         </button>
       </div>
 
-      {menuOpen && (
+      {/* menú en móviles (opcional) */}
+      {menuOpen && !usuario && (
         <nav className="md:hidden bg-blue-900 text-white px-6 py-4 space-y-3 font-semibold">
           <Link
             to="/login"

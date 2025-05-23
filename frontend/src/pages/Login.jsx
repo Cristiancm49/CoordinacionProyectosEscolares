@@ -90,6 +90,7 @@ export default function Login() {
             Entrar
           </button>
         </form>
+        
 
         <div className="flex justify-between text-sm text-blue-600 mt-4">
           <button
@@ -105,7 +106,17 @@ export default function Login() {
           >
             ¿Olvidaste tu contraseña?
           </button>
+          
         </div>
+        <div className="text-center text-sm mt-6 text-blue-600">
+  ¿No tienes una cuenta?
+  <button
+    onClick={() => navigate('/register')}
+    className="ml-1 underline font-semibold hover:text-blue-900"
+  >
+    Regístrate aquí
+  </button>
+</div>
       </div>
     </div>
   );
