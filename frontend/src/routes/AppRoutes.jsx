@@ -53,6 +53,7 @@ export default function AppRoutes() {
         <Route index element={<BienvenidaDocente />} />
         <Route path='perfil' element={<MiPerfil />} />
         <Route path="mis-proyectos" element={<DocenteProyectos />} />
+        <Route path="mis-proyectos/proyecto/:id" element={<DetalleProyecto />} />
         </Route>
       </Route>
     
