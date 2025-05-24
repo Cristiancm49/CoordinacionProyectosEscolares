@@ -9,11 +9,17 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { usuario } = useAuth();
   const navigate = useNavigate();
+  const [fotoPreview, setFotoPreview] = useState(null);
 
+  useEffect(() => {
+    if (usuario?.id) {
+      setFotoPreview(`http://localhost:4000/api/foto-perfil/${usuario.id}`);
+    }
+  }, [usuario]);
+  
   useEffect(() => {
     AOS.init({ duration: 700, easing: 'ease-in-out', once: true });
   }, []);
-
   const irAlPanel = () => {
     switch (usuario?.idRol) {
       case 1:
@@ -56,7 +62,7 @@ export default function Header() {
     </span>
 
     <img
-      src="https://i.pravatar.cc/150"
+      src={fotoPreview}
       alt="Perfil"
       className="w-12 h-12 rounded-full border-2 border-white shadow"
     />

@@ -4,12 +4,13 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import ProtectedRoute from '../components/ProtectedRoute';
 import PublicRoute from '../components/PublicRoute';
-import EstudianteHome from '../pages/Estudiante/HomeEstudainte';
 import DocenteHome from '../pages/Docente/DocenteHome';
 import CoordinadorHome from '../pages/Coordinador/HomeCooordinador';
 import PanelLayout from '../layouts/PanelLayout';
 import EstudianteProyectos from '../pages/panel/std/EstudiantProyectos';
+import DetalleProyecto from '../pages/panel/std/DetalleProyecto';
 import MiPerfil from '../pages/panel/MiPerfil';
+import BienvenidaEstudiante from '../pages/panel/std/BienvenidaEstudiante';
 
 export default function AppRoutes() {
   return (
@@ -34,13 +35,14 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Protegidas por rol */}
 
 
       <Route element={<ProtectedRoute allowedRoles={[1]} />}>
         <Route path="/estudiante" element={<PanelLayout />}>
+        <Route index element={<BienvenidaEstudiante />} />
           <Route path="mis-proyectos" element={<EstudianteProyectos />} />
           <Route path='perfil' element={<MiPerfil />} />
+          <Route path="mis-proyectos/proyecto/:id" element={<DetalleProyecto />} />
         </Route>
       </Route>
 
