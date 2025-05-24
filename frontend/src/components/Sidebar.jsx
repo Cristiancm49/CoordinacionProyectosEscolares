@@ -67,7 +67,7 @@ export default function Sidebar() {
 
           {usuario?.idRol === 2 && (
             <Link
-              to="proyectos"
+              to="mis-proyectos"
               className={`px-4 py-2 rounded transition ${
                 isActive('proyectos') ? 'bg-blue-700' : 'hover:bg-blue-800'
               }`}

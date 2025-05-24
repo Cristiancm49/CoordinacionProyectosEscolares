@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { Menu } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function PanelLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { usuario } = useAuth(); // ← Aquí tomamos el rol
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Botón toggle (solo móvil) */}
+      {/* Botón toggle (móvil) */}
       <button
         className="absolute top-4 left-4 z-50 md:hidden bg-blue-800 text-white p-2 rounded-md shadow-md"
         onClick={() => setSidebarOpen(true)}
@@ -22,10 +24,10 @@ export default function PanelLayout() {
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
           md:static md:block w-64 bg-blue-800 text-white`}
       >
-        <Sidebar onClose={() => setSidebarOpen(false)} />
+        <Sidebar rol={usuario?.idRol} onClose={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Overlay (solo móvil) */}
+      {/* Overlay móvil */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
@@ -33,7 +35,7 @@ export default function PanelLayout() {
         ></div>
       )}
 
-      {/* Contenido principal con scroll */}
+      {/* Contenido */}
       <main className="flex-1 h-full overflow-y-auto bg-gray-100 p-6">
         <Outlet />
       </main>
