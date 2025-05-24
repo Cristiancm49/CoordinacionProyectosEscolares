@@ -282,7 +282,7 @@ export default function DetalleProyecto() {
             onClick={asignarEstudiantes}
             className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            Asignar seleccionados
+            Asignar seleccionados.
           </button>
         </div>
       )}
