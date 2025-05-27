@@ -58,7 +58,7 @@ const institucionesController = {
                 nombre, 
                 direccion, 
                 telefono, 
-                correo, 
+                email, 
                 ciudad)
                 values($1, $2, $3, $4, $5) RETURNING *`, [nombre, direccion, telefono, correo, ciudad]);
                 res.status(201).json({
@@ -71,6 +71,16 @@ const institucionesController = {
             res.status(500).json({ message: 'Error al crear institución.' });
         }
 
+    },
+    eliminarInstitucion: async (req, res) => {
+        const { id } = req.params;
+        try {
+          await pool.query('DELETE FROM institucion WHERE idInstitucion = $1', [id]);
+          res.status(200).json({ mensaje: 'Institución eliminada correctamente' });
+        } catch (error) {
+          console.error('Error al eliminar institución:', error);
+          res.status(500).json({ error: 'Error al eliminar institución' });
+        }
     }
 }
 

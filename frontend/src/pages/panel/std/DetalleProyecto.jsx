@@ -28,7 +28,7 @@ export default function DetalleProyecto() {
       .then(setArchivos)
       .catch(console.error);
 
-    if (usuario?.idRol === 2) {
+    if (usuario?.idRol === 2 || usuario?.idRol === 3) {
       fetch('http://localhost:4000/api/estudiantes/getEstudiantes')
         .then(res => res.json())
         .then(setEstudiantes);
@@ -61,6 +61,52 @@ export default function DetalleProyecto() {
       setArchivos(prev => [...prev, ...(data.archivos || [])]);
     } else {
       Swal.fire('Error', 'No se pudo subir el archivo', 'error');
+    }
+  };
+
+  const eliminarArchivo = async (idArchivo) => {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar archivo?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const res = await fetch(`http://localhost:4000/api/archivos/${idArchivo}`, {
+      method: 'DELETE'
+    });
+
+    if (res.ok) {
+      setArchivos((prev) => prev.filter((a) => a.id !== idArchivo));
+      Swal.fire('Eliminado', 'Archivo eliminado correctamente', 'success');
+    } else {
+      Swal.fire('Error', 'No se pudo eliminar el archivo', 'error');
+    }
+  };
+
+  const eliminarProyecto = async () => {
+    const confirm = await Swal.fire({
+      title: '¿Eliminar proyecto?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    const res = await fetch(`http://localhost:4000/api/proyectos/deleteProyecto/${id}`, {
+      method: 'DELETE'
+    });
+
+    if (res.ok) {
+      Swal.fire('Eliminado', 'Proyecto eliminado correctamente', 'success');
+      window.history.back(); // Redirige al usuario a la página anterior
+    } else {
+      Swal.fire('Error', 'No se pudo eliminar el proyecto', 'error');
     }
   };
 
@@ -140,7 +186,7 @@ export default function DetalleProyecto() {
           <div><strong>Creador:</strong> <p>{proyecto.creador}</p></div>
         </div>
 
-        <div className="flex gap-2 justify-end mt-4">
+        <div className="flex gap-2 justify-end mt-4 flex-wrap">
           <a
             href={`http://localhost:4000/api/reportes/getReporte/${proyecto.idproyecto}`}
             target="_blank"
@@ -149,13 +195,31 @@ export default function DetalleProyecto() {
           >
             Ver reporte PDF
           </a>
-          {usuario?.idRol === 2 && (
+
+          {(usuario?.idRol === 2 || usuario?.idRol === 3) && (
             <button
               className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
               onClick={() => setMostrarModal(true)}
             >
               Editar proyecto
             </button>
+          )}
+
+          {usuario?.idRol === 3 && (
+            <>
+              <button
+                onClick={() => window.open(`http://localhost:4000/api/proyectos/historial/${id}`, '_blank')}
+                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+              >
+                Ver historial
+              </button>
+              <button
+                onClick={eliminarProyecto}
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Eliminar proyecto
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -169,16 +233,19 @@ export default function DetalleProyecto() {
         </button>
         <ul className="mt-4 space-y-2">
           {archivos.map((a) => (
-            <li key={a.id} className="text-sm text-gray-800 flex justify-between border-b pb-2">
+            <li key={a.id} className="text-sm text-gray-800 flex justify-between items-center border-b pb-2">
               <span>{a.nombre}</span>
-              <span className="text-xs text-gray-500">{new Date(a.fechaSubida).toLocaleDateString()}</span>
+              <div className="flex gap-2 text-xs">
+                <span className="text-gray-500">{new Date(a.fechaSubida).toLocaleDateString()}</span>
+                <button onClick={() => eliminarArchivo(a.id)} className="text-red-500 hover:underline">Eliminar</button>
+              </div>
             </li>
           ))}
         </ul>
       </div>
 
       {/* Estudiantes asignados */}
-      {usuario?.idRol === 2 && (
+      {(usuario?.idRol === 2 || usuario?.idRol === 3) && (
         <div className="bg-white p-6 rounded-xl shadow">
           <h3 className="text-lg font-bold mb-2">Estudiantes asignados</h3>
           <ul className="space-y-1">
@@ -195,7 +262,7 @@ export default function DetalleProyecto() {
       )}
 
       {/* Asignar estudiantes */}
-      {usuario?.idRol === 2 && (
+      {(usuario?.idRol === 2 || usuario?.idRol === 3) && (
         <div className="bg-white p-6 rounded-xl shadow">
           <h3 className="text-lg font-bold mb-2">Asignar estudiantes</h3>
           <input
