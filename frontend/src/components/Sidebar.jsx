@@ -57,13 +57,7 @@ export default function Sidebar() {
                             >
                                 Proyectos
                             </Link>
-                            <Link
-                                to="estados"
-                                className={`px-4 py-2 rounded transition ${isActive('estados') ? 'bg-blue-700' : 'hover:bg-blue-800'
-                                    }`}
-                            >
-                                Estados Proyecto
-                            </Link>
+
                         </>
                     )}
 

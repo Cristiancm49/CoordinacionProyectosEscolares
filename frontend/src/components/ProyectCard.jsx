@@ -9,27 +9,27 @@ export default function ProyectoCard({ proyecto, onVerMas, onEditar = null, onEl
   const creador = proyecto.creador || proyecto.nombre_creador || '';
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-200 flex flex-col justify-between h-full">
+    <div className="bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all border border-gray-200 flex flex-col justify-between h-full">
       <div className="space-y-3 text-sm text-gray-700">
-        <h2 className="text-lg font-bold text-blue-800">{nombreProyecto}</h2>
+        <h2 className="text-lg font-bold text-blue-800 break-words">{nombreProyecto}</h2>
 
-        <div className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold">
+        <span className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-semibold">
           {estado}
-        </div>
+        </span>
 
         <p className="font-semibold">{institucion}</p>
-        {creador && <p>{creador}</p>}
+        {creador && <p className="text-sm text-gray-600">Creado por: {creador}</p>}
 
-        <div className="flex justify-between items-center gap-4 mt-2">
+        <div className="flex justify-between items-start flex-wrap gap-4 mt-4">
           <div className="text-xs text-gray-500">
-            <p className="font-medium">Inicio del proyecto</p>
+            <p className="font-medium">Inicio</p>
             <p className="text-sm text-gray-700">
               {new Date(proyecto.fechainicio).toLocaleDateString()}
             </p>
           </div>
 
           <div className="text-xs text-gray-500 text-right">
-            <p className="font-medium">Fin del proyecto</p>
+            <p className="font-medium">Fin</p>
             <p className="text-sm text-gray-700">
               {new Date(proyecto.fechafin).toLocaleDateString()}
             </p>
@@ -37,10 +37,10 @@ export default function ProyectoCard({ proyecto, onVerMas, onEditar = null, onEl
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 mt-6">
+      <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 mt-6">
         <button
           onClick={() => onVerMas(proyecto)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
+          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm"
         >
           Ver más
         </button>
@@ -48,7 +48,7 @@ export default function ProyectoCard({ proyecto, onVerMas, onEditar = null, onEl
         {onEditar && (
           <button
             onClick={() => onEditar(proyecto)}
-            className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition text-sm"
+            className="w-full sm:w-auto bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition text-sm"
           >
             Editar
           </button>
@@ -57,7 +57,7 @@ export default function ProyectoCard({ proyecto, onVerMas, onEditar = null, onEl
         {usuario?.idRol === 3 && onEliminar && (
           <button
             onClick={() => onEliminar(proyecto.idproyecto)}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm"
+            className="w-full sm:w-auto bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm"
           >
             Eliminar
           </button>

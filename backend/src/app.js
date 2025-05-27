@@ -19,6 +19,7 @@ const estudiantesRoutes = require('./routes/estudiantesRoutes');
 const archivosRoutes = require('./routes/archivosRoutes');
 const fotoPerfilRoutes = require('./routes/fotoPerfilRoutes');
 const rolesRoutes = require('./routes/rolesRoutes');
+const historialRoutes = require('./routes/historialRoutes');
 
 
 app.use('/api/auth', authRoutes);
@@ -32,6 +33,7 @@ app.use('/api/estudiantes', estudiantesRoutes);
 app.use('/api/archivos', archivosRoutes);
 app.use('/api/foto-perfil', fotoPerfilRoutes);
 app.use('/api/roles', rolesRoutes);
+app.use('/api/historial', historialRoutes);
 
 app.get('/', (req, res) => {
     res.send('Gestión de Proyectos Escolares - Backend Activo');

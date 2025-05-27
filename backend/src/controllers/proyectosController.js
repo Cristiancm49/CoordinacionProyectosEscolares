@@ -1,10 +1,38 @@
 const pool = require('../config/db');
 
 const proyectoController = {
+
+    getDocentes: async (req, res) => {
+        try {
+          const result = await pool.query(
+            `SELECT idusuario, nombre, apellidos FROM usuario WHERE idrol = 2`
+          );
+          res.json(result.rows);
+        } catch (error) {
+          console.error('Error al obtener docentes:', error);
+          res.status(500).json({ message: 'Error al obtener docentes.' });
+        }
+      },
+
     getProyectos: async (req, res) => {
         try {
 
-            const result = await pool.query(`SELECT * FROM proyecto`);
+            const result = await pool.query(`
+	  SELECT 
+  p.*,
+  ep.nombre AS estado_actual,
+  i.nombre AS nombre_institucion,
+  u.nombre || ' ' || u.apellidos AS creador
+FROM proyecto p
+JOIN institucion i ON i.idinstitucion = p.idinstitucion
+JOIN usuario u ON u.idusuario = p.idusuariocreador
+LEFT JOIN (
+  SELECT DISTINCT ON (idProyecto) idProyecto, idEstadoProyecto
+  FROM historialEstado
+  ORDER BY idProyecto, fechaCambio DESC
+) he ON he.idProyecto = p.idproyecto
+LEFT JOIN estadoProyecto ep ON ep.idEstadoProyecto = he.idEstadoProyecto
+`);
             res.json(result.rows);
 
         } catch (error) {
@@ -263,6 +291,16 @@ ORDER BY p.fechacreacion DESC;
         } catch (error) {
             console.error('Error al obtener proyecto extendido:', error);
             res.status(500).json({ message: 'Error al obtener el proyecto.' });
+        }
+    },
+    eliminarProyecto: async (req, res) => {
+        const { id } = req.params;
+        try {
+            await pool.query(`DELETE FROM proyecto WHERE idproyecto = $1`, [id]);
+            res.status(200).json({ message: 'Proyecto eliminado correctamente' });
+        } catch (error) {
+            console.error('Error al eliminar proyecto:', error);
+            res.status(500).json({ message: 'Error al eliminar proyecto' });
         }
     }
 };

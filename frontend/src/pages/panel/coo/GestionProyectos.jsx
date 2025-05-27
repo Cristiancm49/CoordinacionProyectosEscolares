@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import ProyectoCard from '../../../components/ProyectCard';
 import Modal from '../../../components/Modal';
 import ProyectoForm from '../../../components/proyectoForm';
+import CrearProyectoModal from '../../../components/CrearProyectoModal'; // 👈 asegúrate de importar esto
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -10,32 +11,19 @@ export default function GestionProyectosCoordinador() {
   const { usuario } = useAuth();
   const navigate = useNavigate();
   const [proyectos, setProyectos] = useState([]);
-  const [instituciones, setInstituciones] = useState([]);
-  const [creadores, setCreadores] = useState([]);
   const [busqueda, setBusqueda] = useState('');
-  const [filtroInstitucion, setFiltroInstitucion] = useState('');
-  const [filtroCreador, setFiltroCreador] = useState('');
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarCrear, setMostrarCrear] = useState(false);
   const [editando, setEditando] = useState(null);
 
   const cargarProyectos = async () => {
-    const res = await fetch('http://localhost:4000/api/proyectos/getProyectos');
-    const data = await res.json();
-    setProyectos(data);
-
-    // Extraer instituciones únicas
-    const insts = [...new Set(data.map(p => ({
-      id: p.idinstitucion,
-      nombre: p.nombre_institucion
-    })))];
-    setInstituciones(insts);
-
-    // Extraer creadores únicos
-    const cread = [...new Set(data.map(p => ({
-      id: p.idusuariocreador,
-      nombre: p.creador
-    })))];
-    setCreadores(cread);
+    try {
+      const res = await fetch('http://localhost:4000/api/proyectos/getProyectos');
+      const data = await res.json();
+      setProyectos(data);
+    } catch (err) {
+      console.error('Error al cargar proyectos:', err);
+    }
   };
 
   useEffect(() => {
@@ -70,13 +58,13 @@ export default function GestionProyectosCoordinador() {
     }
   };
 
-  const handleEliminar = async (id) => {
+  const handleEliminarProyecto = async (id) => {
     const confirm = await Swal.fire({
       title: '¿Eliminar proyecto?',
-      text: 'Esta acción no se puede deshacer',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Eliminar',
+      confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar'
     });
 
@@ -87,61 +75,43 @@ export default function GestionProyectosCoordinador() {
     });
 
     if (res.ok) {
-      Swal.fire('Eliminado', 'Proyecto eliminado correctamente', 'success');
+      Swal.fire('Eliminado', 'Proyecto eliminado correctamente.', 'success');
       await cargarProyectos();
     } else {
-      Swal.fire('Error', 'No se pudo eliminar el proyecto', 'error');
+      Swal.fire('Error', 'No se pudo eliminar el proyecto.', 'error');
     }
   };
 
-  const filtrados = proyectos.filter((p) => {
-    const coincideNombre = (p.nombre || p.nombre_proyecto || '').toLowerCase().includes(busqueda.toLowerCase());
-    const coincideInst = filtroInstitucion ? p.idinstitucion === parseInt(filtroInstitucion) : true;
-    const coincideCreador = filtroCreador ? p.idusuariocreador === parseInt(filtroCreador) : true;
-    return coincideNombre && coincideInst && coincideCreador;
-  });
+  const proyectosFiltrados = proyectos.filter((p) =>
+    (p.nombre || p.nombre_proyecto || '').toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
       <h2 className="text-2xl font-bold text-blue-800 mb-4">Gestión de Proyectos</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="flex justify-between mb-4 flex-wrap gap-4">
         <input
           type="text"
           placeholder="Buscar por nombre..."
           value={busqueda}
           onChange={(e) => setBusqueda(e.target.value)}
-          className="p-2 border rounded w-full"
+          className="p-2 border rounded w-full md:w-1/2"
         />
 
-        <select
-          value={filtroInstitucion}
-          onChange={(e) => setFiltroInstitucion(e.target.value)}
-          className="p-2 border rounded w-full"
+        <button
+          onClick={() => setMostrarCrear(true)}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
         >
-          <option value="">Todas las instituciones</option>
-          {instituciones.map((i) => (
-            <option key={i.id} value={i.id}>{i.nombre}</option>
-          ))}
-        </select>
-
-        <select
-          value={filtroCreador}
-          onChange={(e) => setFiltroCreador(e.target.value)}
-          className="p-2 border rounded w-full"
-        >
-          <option value="">Todos los docentes</option>
-          {creadores.map((c) => (
-            <option key={c.id} value={c.id}>{c.nombre}</option>
-          ))}
-        </select>
+          Crear nuevo proyecto
+        </button>
       </div>
 
-      {filtrados.length === 0 ? (
+      {proyectosFiltrados.length === 0 ? (
         <p className="text-gray-500">No se encontraron proyectos.</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filtrados.map((proyecto) => (
+          {proyectosFiltrados.map((proyecto) => (
             <ProyectoCard
               key={proyecto.idproyecto}
               proyecto={proyecto}
@@ -151,12 +121,13 @@ export default function GestionProyectosCoordinador() {
                 setEditando(p);
                 setMostrarModal(true);
               }}
-              onEliminar={handleEliminar}
+              onEliminar={handleEliminarProyecto}
             />
           ))}
         </div>
       )}
 
+      {/* Modal editar */}
       {mostrarModal && editando && (
         <Modal
           titulo="Editar Proyecto"
@@ -177,6 +148,22 @@ export default function GestionProyectosCoordinador() {
             onCancel={() => {
               setMostrarModal(false);
               setEditando(null);
+            }}
+          />
+        </Modal>
+      )}
+
+      {/* Modal crear */}
+      {mostrarCrear && (
+        <Modal
+          titulo="Crear nuevo proyecto"
+          onClose={() => setMostrarCrear(false)}
+        >
+          <CrearProyectoModal
+            onClose={() => setMostrarCrear(false)}
+            onSuccess={async () => {
+              await cargarProyectos(); // 🔁 se actualiza lista
+              setMostrarCrear(false); // ✅ se cierra el modal después de actualizar
             }}
           />
         </Modal>

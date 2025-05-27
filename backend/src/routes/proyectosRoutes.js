@@ -11,5 +11,9 @@ routes.get('/getProyectos/institucion/:id', proyectosController.getProyectosByIn
 routes.get('/getProyectos/usuario/:id', proyectosController.getProyectosByUsuario);
 routes.post('/actualizarEstadoProyecto', proyectosController.cambiarEstadoProyecto);
 routes.get('/getProyectoExtendido/:id', proyectosController.getProyectoExtendido);
+routes.delete('/deleteProyecto/:id', proyectosController.eliminarProyecto);
+routes.get('/getDocentes', proyectosController.getDocentes);
+
+
 
 module.exports = routes;

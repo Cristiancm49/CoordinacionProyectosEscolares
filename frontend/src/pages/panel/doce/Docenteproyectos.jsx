@@ -18,10 +18,15 @@ export default function GestionProyectos() {
   const cargarProyectos = async () => {
     try {
       const res = await fetch(`http://localhost:4000/api/proyectos/getProyectos/usuario/${usuario.id}`);
+      if (!res.ok) {
+        setProyectos([]);
+        return;
+      }
       const data = await res.json();
       setProyectos(data);
     } catch (err) {
       console.error('Error al cargar proyectos:', err);
+      setProyectos([]); 
     }
   };
 
@@ -167,12 +172,16 @@ export default function GestionProyectos() {
         >
           <ProyectoForm
             usuario={usuario}
-            defaultValues={modoCreacion ? {} : {
-              ...proyectoEditando,
-              idInstitucion: String(proyectoEditando.idinstitucion),
-              fechaInicio: proyectoEditando.fechainicio?.split('T')[0],
-              fechaFin: proyectoEditando.fechafin?.split('T')[0]
-            }}
+            defaultValues={
+                proyectoEditando
+                  ? {
+                      ...proyectoEditando,
+                      idInstitucion: String(proyectoEditando.idinstitucion),
+                      fechaInicio: proyectoEditando.fechainicio?.split('T')[0] || '',
+                      fechaFin: proyectoEditando.fechafin?.split('T')[0] || ''
+                    }
+                  : {}
+              }
             onCancel={() => {
               setMostrarModal(false);
               setProyectoEditando(null);

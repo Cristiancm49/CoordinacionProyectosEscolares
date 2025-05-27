@@ -17,6 +17,10 @@ export default function DetalleProyecto() {
   const [seleccionados, setSeleccionados] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
 
+
+  const [historial, setHistorial] = useState([]);
+  const [mostrarHistorial, setMostrarHistorial] = useState(false);
+
   useEffect(() => {
     fetch(`http://localhost:4000/api/proyectos/getProyectoExtendido/${id}`)
       .then((res) => res.json())
@@ -42,6 +46,19 @@ export default function DetalleProyecto() {
   const handleArchivoChange = (e) => {
     setArchivosSeleccionados(Array.from(e.target.files));
   };
+
+  const cargarHistorial = async () => {
+    try {
+      const res = await fetch(`http://localhost:4000/api/historial/${id}`);
+      const data = await res.json();
+      setHistorial(data);
+      setMostrarHistorial(true);
+    } catch (err) {
+      console.error('Error al cargar historial:', err);
+      Swal.fire('Error', 'No se pudo cargar el historial', 'error');
+    }
+  };
+  
 
   const handleUpload = async () => {
     const formData = new FormData();
@@ -208,7 +225,7 @@ export default function DetalleProyecto() {
           {usuario?.idRol === 3 && (
             <>
               <button
-                onClick={() => window.open(`http://localhost:4000/api/proyectos/historial/${id}`, '_blank')}
+                onClick={cargarHistorial}
                 className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
               >
                 Ver historial
@@ -294,7 +311,18 @@ export default function DetalleProyecto() {
         </div>
       )}
 
-      {/* Modal editar */}
+{mostrarHistorial && (
+  <Modal titulo="Historial de estados" onClose={() => setMostrarHistorial(false)}>
+    <ul className="space-y-2 text-sm">
+      {historial.map((h) => (
+        <li key={h.idhistorialestado} className="border-b pb-2">
+          <p><strong>Estado:</strong> {h.nombre_estado}</p>
+          <p className="text-gray-600"><strong>Fecha:</strong> {new Date(h.fechacambio).toLocaleString()}</p>
+        </li>
+      ))}
+    </ul>
+  </Modal>
+)}
       {mostrarModal && (
         <Modal titulo="Editar proyecto" onClose={() => setMostrarModal(false)}>
           <ProyectoForm
@@ -319,6 +347,7 @@ export default function DetalleProyecto() {
           />
         </Modal>
       )}
+      
     </div>
   );
 }
